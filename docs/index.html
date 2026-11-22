@@ -18,22 +18,13 @@
   header { width: 100%; max-width: 900px; padding: 14px 16px 8px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   h1 { margin: 0; font-size: 17px; font-weight: 600; }
   h1 span { color: var(--muted); font-weight: 400; }
-  nav { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
-  nav button { font: inherit; font-size: 14px; font-weight: 500; min-height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; }
-  nav button[aria-pressed="true"] { background: var(--on); color: #fff; }
   main { flex: 1 1 auto; width: 100%; display: flex; justify-content: center; align-items: flex-start; gap: 40px; padding: 4px 0 16px; }
   figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
   figcaption { font-size: 13px; color: var(--muted); }
   .frame { position: relative; overflow: hidden; border-radius: 28px; box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(0,0,0,0.35); }
   .stage { position: absolute; left: 0; top: 0; width: 390px; height: 844px; transform-origin: 0 0; }
   .status { padding: 24px; color: var(--muted); font-size: 14px; }
-  /* Side by side when there is room, otherwise one screen at a time. */
-  body.single figure:not(.active) { display: none; }
-  body:not(.single) nav { display: none; }
-  body.single figcaption { display: none; }
-  body.phone header { padding: 6px 12px; flex-wrap: nowrap; }
-  body.phone nav button { min-height: 32px; padding: 0 10px; font-size: 13px; }
-  body.phone h1 { font-size: 15px; }
+  body.phone header, body.phone figcaption { display: none; }
   body.phone main { padding: 0; }
   body.phone .frame { border-radius: 0; box-shadow: none; }
 </style>
@@ -44,55 +35,31 @@
 <body>
 <header>
   <h1>Alarms <span>· interactive prototype</span></h1>
-  <nav aria-label="Screen">
-    <button type="button" data-show="main" aria-pressed="true">Week grid</button>
-    <button type="button" data-show="ring" aria-pressed="false">Ringing</button>
-  </nav>
 </header>
 <main>
-  <figure id="main" class="active">
+  <figure id="main">
     <div class="frame"><div class="stage"><p class="status">Loading…</p></div></div>
     <figcaption>Tap the grid to add an alarm, drag to adjust</figcaption>
-  </figure>
-  <figure id="ring">
-    <div class="frame"><div class="stage"><p class="status">Loading…</p></div></div>
-    <figcaption>Alarm ringing: swipe to dismiss</figcaption>
   </figure>
 </main>
 <script>
   const W = 390, H = 844;
   const params = new URLSearchParams(location.search);
-  const figs = [...document.querySelectorAll('figure')];
-  // ?screen=ring opens the ringing screen; ?view=intro|empty|… picks the prototype's starting state.
-  let shown = params.get('screen') === 'ring' ? 'ring' : 'main';
-
-  function show(id) {
-    shown = id;
-    figs.forEach((f) => f.classList.toggle('active', f.id === id));
-    document.querySelectorAll('nav button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.show === id)));
-  }
-  document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => show(b.dataset.show)));
+  // ?view=intro|empty|edit|skip|settings picks the prototype's starting state.
+  const fig = document.getElementById('main');
 
   function layout() {
     const vw = document.documentElement.clientWidth, vh = window.innerHeight;
     const phone = vw < 520;
     document.body.classList.toggle('phone', phone);
-    const both = !phone && vw >= 2 * W * 0.6 + 120 && vh >= 560;
-    document.body.classList.toggle('single', !both);
-    const headerH = document.querySelector('header').offsetHeight;
-    const capH = both ? 34 : 0;
-    const availH = vh - headerH - capH - (phone ? 0 : 24);
-    const availW = both ? (vw - 120) / 2 : vw - (phone ? 0 : 32);
-    const s = phone ? Math.min(vw / W, (vh - headerH) / H) : Math.min(1, availH / H, availW / W);
-    figs.forEach((f) => {
-      const frame = f.querySelector('.frame');
-      frame.style.width = W * s + 'px';
-      frame.style.height = H * s + 'px';
-      f.querySelector('.stage').style.transform = 'scale(' + s + ')';
-    });
+    const s = phone ? Math.min(vw / W, vh / H)
+      : Math.min(1, (vh - document.querySelector('header').offsetHeight - 34 - 24) / H, (vw - 32) / W);
+    const frame = fig.querySelector('.frame');
+    frame.style.width = W * s + 'px';
+    frame.style.height = H * s + 'px';
+    fig.querySelector('.stage').style.transform = 'scale(' + s + ')';
   }
   window.addEventListener('resize', layout);
-  show(shown);
   layout();
   if (document.fonts) document.fonts.ready.then(layout);
 
@@ -100,8 +67,6 @@
   const props = view ? { startView: view } : {};
   DCLite.mount(document.querySelector('#main .stage'), 'prototype/Main.dc.html', props)
     .catch((e) => { document.querySelector('#main .stage').innerHTML = '<p class="status"></p>'; document.querySelector('#main .status').textContent = e.message; });
-  DCLite.mount(document.querySelector('#ring .stage'), 'prototype/Ring.dc.html', {})
-    .catch((e) => { document.querySelector('#ring .stage').innerHTML = '<p class="status"></p>'; document.querySelector('#ring .status').textContent = e.message; });
 </script>
 </body>
 </html>

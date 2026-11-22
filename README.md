@@ -28,7 +28,7 @@ The Outfit typeface is bundled under the SIL Open Font License 1.1, see [license
 ## Web prototype
 
 `docs/` holds the interactive design prototype, served by GitHub Pages at
-<https://johnedwarda.github.io/alarms/>. The screens in `docs/prototype/*.dc.html` are the design files
-exported from the design canvas; `docs/dc-lite.js` is a small React-based renderer that runs them as a static page.
-`?view=intro|empty|edit|skip|settings` picks the starting state and `?screen=ring` opens the ringing screen.
+<https://johnedwarda.github.io/alarms/>. `docs/prototype/Main.dc.html` is the design file
+exported from the design canvas; `docs/dc-lite.js` is a small React-based renderer that runs it as a static page.
+`?view=intro|empty|edit|skip|settings` picks the starting state.
 To try it locally: `python3 -m http.server -d docs` and open <http://localhost:8000>.
