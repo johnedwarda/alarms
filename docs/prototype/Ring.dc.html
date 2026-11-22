@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Alarm ringing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+.shimmer{background:linear-gradient(90deg,#B396C0 0%,#B396C0 40%,#FFFFFF 50%,#B396C0 60%,#B396C0 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 2.4s linear infinite}
+@keyframes sh{from{background-position:100% 0}to{background-position:-100% 0}}
+@media (prefers-reduced-motion: reduce){.shimmer{animation:none;color:#B396C0}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 0 24px 160px; font-family: Outfit, system-ui, sans-serif; font-variant-numeric: tabular-nums; color: #F6ECF8; background: radial-gradient(130% 45% at 50% 38%, rgba(214,31,203,0.30), rgba(214,31,203,0) 70%), #14151C">
+
+  <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0">
+    <svg width="168" height="168" viewBox="0 0 168 168" aria-hidden="true">
+      <circle cx="84" cy="88" r="40" fill="none" stroke="#F23FE4" stroke-width="2">
+        <animate attributeName="r" values="40;80" dur="2.4s" repeatCount="indefinite"></animate>
+        <animate attributeName="opacity" values="0.6;0" dur="2.4s" repeatCount="indefinite"></animate>
+      </circle>
+      <circle cx="84" cy="88" r="40" fill="none" stroke="#F23FE4" stroke-width="2">
+        <animate attributeName="r" values="40;80" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate>
+        <animate attributeName="opacity" values="0.6;0" dur="2.4s" begin="1.2s" repeatCount="indefinite"></animate>
+      </circle>
+      <g transform="translate(48 52) scale(1.8)">
+        <defs>
+          <linearGradient id="ring-logo" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6D3DF2"></stop>
+            <stop offset="1" stop-color="#E43BC6"></stop>
+          </linearGradient>
+        </defs>
+        <path d="M4.6 12.6 A 7 7 0 0 1 14.6 4.8 Z" fill="url(#ring-logo)"></path>
+        <path d="M35.4 12.6 A 7 7 0 0 0 25.4 4.8 Z" fill="url(#ring-logo)"></path>
+        <circle cx="20" cy="22" r="13.6" fill="#FFFFFF" stroke="url(#ring-logo)" stroke-width="2.4"></circle>
+        <circle cx="20" cy="22" r="10.4" fill="#F3ECFA"></circle>
+        <circle cx="20" cy="22" r="7.6" fill="#FFFFFF"></circle>
+        <path d="M20 22 L 15.6 18.6" stroke="#2B0C3F" stroke-width="1.6" stroke-linecap="round"></path>
+        <path d="M20 22 L 25.4 17.4" stroke="#2B0C3F" stroke-width="1.3" stroke-linecap="round"></path>
+        <path d="M20 22 L 21.2 28.4" stroke="#E43BC6" stroke-width="0.8" stroke-linecap="round"></path>
+        <circle cx="20" cy="22" r="1.1" fill="#2B0C3F"></circle>
+      </g>
+    </svg>
+    <div style="margin-top: 12px; font-size: 76px; font-weight: 500; line-height: 1; letter-spacing: -0.01em; color: #F6ECF8; text-shadow: 0 0 24px rgba(242,63,228,0.45)">06:00</div>
+    <div style="margin-top: 14px; font-size: 22px; font-weight: 500; color: #F7A8F1">Every morning</div>
+    <div style="margin-top: 6px; font-size: 14px; color: #B396C0">{{ dateText }}</div>
+  </div>
+
+  <sc-if value="{{ showControls }}" hint-placeholder-val="{{ true }}">
+    <div style="position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 12px">
+      <button onClick="{{ snooze }}" style="font-family: inherit; height: 64px; border-radius: 32px; background: transparent; border: 1.5px solid rgba(242,63,228,0.45); color: #F7A8F1; font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6l-6 7h6"></path><path d="M13 13h7l-7 7h7"></path></svg>
+        Snooze 10 min
+      </button>
+      <div ref="{{ trackRef }}" style="position: relative; height: 76px; box-sizing: border-box; padding: 6px; border-radius: 38px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); overflow: hidden">
+        <span aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: 0; border-radius: 37px; pointer-events: none; background: linear-gradient(90deg, rgba(198,24,196,0.35), rgba(156,18,214,0.15)); width: {{ fillW }}px"></span>
+        <span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding-left: 52px; font-size: 18px; font-weight: 500; pointer-events: none; color: #B396C0; opacity: {{ hintOp }}">
+          <span class="shimmer">Swipe to dismiss</span>
+        </span>
+        <button role="slider" aria-label="Swipe right to dismiss the alarm" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}" onKeyDown="{{ onKey }}" onPointerDown="{{ down }}" onPointerMove="{{ move }}" onPointerUp="{{ up }}" onPointerCancel="{{ up }}" style="font-family: inherit; position: relative; width: 62px; height: 62px; border: none; border-radius: 31px; cursor: grab; touch-action: none; display: flex; align-items: center; justify-content: center; color: #FFFFFF; background: linear-gradient(135deg, #C618C4 0%, #9C12D6 100%); transform: translateX({{ knobX }}px); transition: {{ knobTrans }}">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h12M12 6l6 6-6 6"></path></svg>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ dismissed }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position: absolute; left: 16px; right: 16px; bottom: 16px; height: 152px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #F6ECF8">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F7A8F1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
+      <span style="font-size: 18px; font-weight: 500">Alarm dismissed</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { x: 0, dragging: false, dismissed: false };
+    this.max = 296;
+  }
+
+  finish() {
+    this.setState({ x: this.max, dragging: false, dismissed: true });
+    try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+    clearTimeout(this.resetT);
+    this.resetT = setTimeout(() => this.setState({ x: 0, dismissed: false }), 1800);
+  }
+
+  componentWillUnmount() { clearTimeout(this.resetT); }
+
+  renderVals() {
+    const s = this.state;
+    return {
+      dateText: new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).replace(',', ''),
+      showControls: !s.dismissed,
+      dismissed: s.dismissed,
+      knobX: s.x,
+      fillW: s.x + 56,
+      pct: Math.round((s.x / this.max) * 100),
+      hintOp: Math.max(0, 1 - s.x / 140).toFixed(2),
+      knobTrans: s.dragging ? 'none' : 'transform 0.3s cubic-bezier(.2,.8,.2,1)',
+      trackRef: (el) => { if (el && el.clientWidth) this.max = el.clientWidth - 12 - 62; },
+      snooze: () => {},
+      onKey: (e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); this.finish(); } },
+      down: (e) => {
+        if (s.dismissed) return;
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+        const r = e.currentTarget.getBoundingClientRect();
+        this.scale = r.width ? 62 / r.width : 1;
+        this.startX = e.clientX;
+        this.startPos = this.state.x;
+        this.setState({ dragging: true });
+      },
+      move: (e) => {
+        if (!this.state.dragging) return;
+        const x = Math.max(0, Math.min(this.max, this.startPos + (e.clientX - this.startX) * this.scale));
+        this.setState({ x: x });
+      },
+      up: () => {
+        if (!this.state.dragging) return;
+        if (this.state.x > this.max * 0.85) this.finish();
+        else this.setState({ x: 0, dragging: false });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
